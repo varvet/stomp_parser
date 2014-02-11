@@ -1,6 +1,7 @@
 # StompParser
 
 [![Build Status](https://travis-ci.org/stompede/stomp_parser.png?branch=master)](https://travis-ci.org/stompede/stomp_parser)
+[![Code Climate](https://codeclimate.com/github/stompede/stomp_parser.png)](https://codeclimate.com/github/stompede/stomp_parser)
 [![Gem Version](https://badge.fury.io/rb/stomp_parser.png)](http://badge.fury.io/rb/stomp_parser)
 
 Fast STOMP parser and serializer for Ruby with native extensions in C for MRI
