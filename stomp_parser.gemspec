@@ -6,10 +6,10 @@ require 'stomp_parser/version'
 Gem::Specification.new do |spec|
   spec.name          = "stomp_parser"
   spec.version       = StompParser::VERSION
-  spec.authors       = ["Kim Burgestrand"]
-  spec.email         = ["kim@burgestrand.se"]
+  spec.authors       = ["Kim Burgestrand", "Jonas Nicklas"]
+  spec.email         = ["kim@burgestrand.se", "jonas.nicklas@gmail.com"]
   spec.summary       = %q{STOMP frame parser.}
-  spec.homepage      = "https://github.com/Burgestrand/stomp_parser"
+  spec.homepage      = "https://github.com/stompede/stomp_parser"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
