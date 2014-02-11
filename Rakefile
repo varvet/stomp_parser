@@ -1,5 +1,3 @@
-require "bundler/gem_tasks"
-
 def ragel(*args)
   sh "ragel", "-I.", *args
 end
@@ -24,8 +22,8 @@ end
 desc "ragel machines"
 task :compile => %w[lib/stomp_parser/ruby_parser.rb]
 
-case RUBY_ENGINE
-when "rbx", "ruby"
+# JRuby do not like C extensions to even exist.
+if %w[rbx ruby].include?(RUBY_ENGINE)
   require "rake/extensiontask"
   task :compile => %w[ext/stomp_parser/c_parser.c]
 
@@ -34,14 +32,14 @@ when "rbx", "ruby"
     ext.ext_dir = "ext/stomp_parser"
     ext.lib_dir = "lib/stomp_parser"
   end
-when "jruby"
-  require "rake/javaextensiontask"
-  task :compile => %w[ext/java/stomp_parser/JavaParser.java]
+end
 
-  Rake::JavaExtensionTask.new do |ext|
-    ext.name = "java_parser"
-    ext.lib_dir = "lib/stomp_parser"
-  end
+require "rake/javaextensiontask"
+task :compile => %w[ext/java/stomp_parser/JavaParser.java]
+
+Rake::JavaExtensionTask.new do |ext|
+  ext.name = "java_parser"
+  ext.lib_dir = "lib/stomp_parser"
 end
 
 desc "ragel machines"
@@ -81,5 +79,56 @@ task :profile => :compile do
   sh "CPUPROFILE_REALTIME=1 ruby spec/profile.rb"
   sh "pprof.rb --text spec/profile/parser.profile"
 end
+
+desc "Build gem in preparation for release"
+task :build, [:everything_compiled?] => :compile do |task, args|
+  unless args[:everything_compiled?] == "all_compiled"
+    puts "Hi there. This is a safeguard to stop you from doing mistakes."
+    puts
+    puts "Make sure that the lib/stomp_parser/java_parser.jar is up to"
+    puts "date by switching to JRuby and running `rake compile`. This is"
+    puts "because JRuby cannot build native extensions on gem installation,"
+    puts "so we must bundle the .jar with the gem."
+    puts
+    puts "To do this, switch to JRuby and issue `rake compile`."
+    puts
+    puts "Once you've compiled the parser, run `rake build[all_compiled]`"
+    puts "to build gems for all platforms!"
+    abort
+  end
+
+  require "rubygems/package"
+
+  root = File.dirname(__FILE__)
+  pkgs = File.join(root, "pkg/")
+  mkdir_p(pkgs, verbose: true)
+
+  gemspec = Gem::Specification.load("stomp_parser.gemspec")
+
+  # For all the rubies. Except JRuby.
+  ruby_gemspec = gemspec.dup
+  ruby_gemspec.platform = Gem::Platform::RUBY
+  ruby_gemname = Gem::Package.build(ruby_gemspec)
+  ruby_gempath = File.join(pkgs, File.basename(ruby_gemname))
+  mv(ruby_gemname, ruby_gempath, verbose: true)
+
+  # JRuby don't like C extensions.
+  java_gemspec = gemspec.dup
+  java_gemspec.files += ["lib/stomp_parser/java_parser.jar"]
+  java_gemspec.extensions = []
+  java_gemspec.platform = "universal-java"
+  java_gemname = Gem::Package.build(java_gemspec)
+  java_gempath = File.join(pkgs, File.basename(java_gemname))
+  mv(java_gemname, java_gempath, verbose: true)
+
+  puts
+  puts "Now you may push the gems:"
+  puts
+  puts "  gem push #{ruby_gempath}"
+  puts "  gem push #{java_gempath}"
+  puts
+  puts "Do not forget to tag and push the versions to GitHub!"
+end
+
 
 task :default => :spec
