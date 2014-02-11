@@ -26,8 +26,8 @@ tmp/
 spec/spec.log
 
 # Ragel
-lib/stompede/stomp/ruby_parser.rb
-lib/stompede/stomp/c_parser.rb
-ext/stompede/c_parser.c
-ext/java/stompede/stomp/JavaParser.java
-lib/stompede/stomp/java_parser.jar
+lib/stomp_parser/ruby_parser.rb
+lib/stomp_parser/c_parser.rb
+ext/stomp_parser/c_parser.c
+ext/java/stomp_parser/JavaParser.java
+lib/stomp_parser/java_parser.jar
