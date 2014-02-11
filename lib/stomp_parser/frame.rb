@@ -108,6 +108,7 @@ module StompParser
       frame << body << "\x00"
       frame
     end
+    alias_method :to_s, :to_str
 
     def [](key)
       @headers[key]
