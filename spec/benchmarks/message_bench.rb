@@ -1,8 +1,8 @@
 require_relative "../bench_helper"
 
-describe "Message#to_str minimal" do |bench|
+describe "Frame#to_str minimal" do |bench|
   bench.setup do
-    @message = StompParser::Message.new("CONNECT", nil)
+    @message = StompParser::Frame.new("CONNECT", nil)
   end
 
   bench.code { @message.to_str }
@@ -12,9 +12,9 @@ describe "Message#to_str minimal" do |bench|
   end
 end
 
-describe "Message#to_str with header" do |bench|
+describe "Frame#to_str with header" do |bench|
   bench.setup do
-    @message = StompParser::Message.new("CONNECT", { "heart-beat" => "0,0" }, nil)
+    @message = StompParser::Frame.new("CONNECT", { "heart-beat" => "0,0" }, nil)
   end
 
   bench.code { @message.to_str }
@@ -24,9 +24,9 @@ describe "Message#to_str with header" do |bench|
   end
 end
 
-describe "Message#to_str with headers and small body" do |bench|
+describe "Frame#to_str with headers and small body" do |bench|
   bench.setup do
-    @message = StompParser::Message.new("CONNECT", { "some" => "header" }, "body")
+    @message = StompParser::Frame.new("CONNECT", { "some" => "header" }, "body")
   end
 
   bench.code { @message.to_str }
@@ -36,10 +36,10 @@ describe "Message#to_str with headers and small body" do |bench|
   end
 end
 
-describe "Message#to_str with headers and large body" do |bench|
+describe "Frame#to_str with headers and large body" do |bench|
   bench.setup do
     large_binary = "b\x00" * 2 # make room for headers
-    @message = StompParser::Message.new("CONNECT", { "some" => "header" }, large_binary)
+    @message = StompParser::Frame.new("CONNECT", { "some" => "header" }, large_binary)
   end
 
   bench.code { @message.to_str }

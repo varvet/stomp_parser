@@ -1,5 +1,5 @@
 module StompParser
-  class Message
+  class Frame
     HEADER_TRANSLATIONS = {
       '\\r' => "\r",
       '\\n' => "\n",

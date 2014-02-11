@@ -11,12 +11,12 @@
     mark = nil
   }
   action mark_message {
-    mark_message = Message.new(nil, nil)
+    mark_message = Frame.new(nil, nil)
     mark_message_size = 0
   }
   action check_message_size {
     mark_message_size += 1
-    raise MessageSizeExceeded if mark_message_size > max_message_size
+    raise FrameSizeExceeded if mark_message_size > max_message_size
   }
 
   action write_command {
@@ -86,13 +86,13 @@ module StompParser
     # bust our ruby method caching
     %% write data noprefix;
 
-    # Parse a chunk of Stomp-formatted data into a Message.
+    # Parse a chunk of Stomp-formatted data into a Frame.
     #
     # @param [String] chunk
     # @param [State] state previous parser state, or nil for initial state
     # @param [Integer] max_message_size
     # @yield [message] yields each message as it is parsed
-    # @yieldparam message [Message]
+    # @yieldparam message [Frame]
     def self._parse(chunk, state, max_message_size)
       chunk.force_encoding(Encoding::BINARY)
 
@@ -143,7 +143,7 @@ module StompParser
     #
     # @param [String] chunk
     # @yield [message]
-    # @yieldparam [Message] message
+    # @yieldparam [Frame] message
     def parse(chunk)
       @error ||= self.class._parse(chunk, @state, @max_message_size) do |message|
         yield message

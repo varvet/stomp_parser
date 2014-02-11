@@ -28,8 +28,8 @@ typedef struct {
 } parser_state_t;
 
 VALUE mStompParser = Qnil;
-VALUE cMessage = Qnil;
-VALUE eMessageSizeExceeded = Qnil;
+VALUE cFrame = Qnil;
+VALUE eFrameSizeExceeded = Qnil;
 ID g_new;
 ID g_write_command;
 ID g_write_header;
@@ -46,7 +46,7 @@ ID g_max_message_size;
   }
 
   action mark_message {
-    mark_message = rb_funcall(cMessage, g_new, 2, Qnil, Qnil);
+    mark_message = rb_funcall(cFrame, g_new, 2, Qnil, Qnil);
     mark_message_size = 0;
   }
 
@@ -91,7 +91,7 @@ ID g_max_message_size;
   action check_message_size {
     mark_message_size += 1;
     if (mark_message_size > max_message_size) {
-      rb_raise(eMessageSizeExceeded, "");
+      rb_raise(eFrameSizeExceeded, "");
     }
   }
 
@@ -206,8 +206,8 @@ static VALUE parser_parse(VALUE self, VALUE new_chunk) {
 
 void Init_c_parser(void) {
   mStompParser = rb_const_get(rb_cObject, rb_intern("StompParser"));
-  cMessage = rb_const_get(mStompParser, rb_intern("Message"));
-  eMessageSizeExceeded = rb_const_get(mStompParser, rb_intern("MessageSizeExceeded"));
+  cFrame = rb_const_get(mStompParser, rb_intern("Frame"));
+  eFrameSizeExceeded = rb_const_get(mStompParser, rb_intern("FrameSizeExceeded"));
 
   g_new = rb_intern("new");
   g_write_command = rb_intern("write_command");

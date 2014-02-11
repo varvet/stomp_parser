@@ -7,12 +7,12 @@ module StompParser
   end
 
   # Raised when the Parser has reached the
-  # limit for how large a Message may be.
+  # limit for how large a Frame may be.
   #
   # Protects against malicious clients trying to
   # fill the available memory by sending very large
   # messages, for example by sending an unlimited
   # amount of headers.
-  class MessageSizeExceeded < ParseError
+  class FrameSizeExceeded < ParseError
   end
 end

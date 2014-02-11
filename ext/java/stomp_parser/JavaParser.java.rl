@@ -26,7 +26,7 @@ import org.jruby.anno.JRubyMethod;
   }
 
   action mark_message {
-    mark_message = context.runtime.getClassFromPath("StompParser::Message").callMethod("new", context.nil, context.nil);
+    mark_message = context.runtime.getClassFromPath("StompParser::Frame").callMethod("new", context.nil, context.nil);
     mark_message_size = 0;
   }
 
@@ -72,8 +72,8 @@ import org.jruby.anno.JRubyMethod;
 
   action check_message_size {
     mark_message_size += 1;
-    if (mark_message_size > maxMessageSize) {
-      RubyModule messageSizeExceeded = context.runtime.getClassFromPath("StompParser::MessageSizeExceeded");
+    if (mark_message_size > maxFrameSize) {
+      RubyModule messageSizeExceeded = context.runtime.getClassFromPath("StompParser::FrameSizeExceeded");
       RubyException error = (RubyException) messageSizeExceeded.callMethod("new");
       throw new RaiseException(error);
     }
@@ -102,7 +102,7 @@ public class JavaParser extends RubyObject {
   }
 
   private RubyException parseError;
-  private long maxMessageSize;
+  private long maxFrameSize;
   private State state;
 
   public JavaParser(Ruby runtime, RubyClass klass) {
@@ -118,8 +118,8 @@ public class JavaParser extends RubyObject {
   }
 
   @JRubyMethod(argTypes = {RubyFixnum.class})
-  public IRubyObject initialize(ThreadContext context, IRubyObject maxMessageSize) {
-    this.maxMessageSize = ((RubyFixnum) maxMessageSize).getLongValue();
+  public IRubyObject initialize(ThreadContext context, IRubyObject maxFrameSize) {
+    this.maxFrameSize = ((RubyFixnum) maxFrameSize).getLongValue();
     return context.nil;
   }
 

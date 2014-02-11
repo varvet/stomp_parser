@@ -252,7 +252,7 @@ RSpec.shared_examples_for "a stomp_parser parser" do
         parser.parse("header:value\n") # 21
         expect {
           parser.parse("other:val\n") # 31
-        }.to raise_error(StompParser::MessageSizeExceeded)
+        }.to raise_error(StompParser::FrameSizeExceeded)
       end
 
       specify "total size bigger than local max message size setting" do
@@ -261,7 +261,7 @@ RSpec.shared_examples_for "a stomp_parser parser" do
         parser.parse("header:value\n") # 21
         expect {
           parser.parse("other:val\n") # 31
-        }.to raise_error(StompParser::MessageSizeExceeded)
+        }.to raise_error(StompParser::FrameSizeExceeded)
       end
     end
   end
