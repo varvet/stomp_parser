@@ -20,7 +20,7 @@ module StompParser
     # @return [String]
     attr_reader :body
 
-    # Construct a message from a command, optional headers, and a body.
+    # Construct a frame from a command, optional headers, and a body.
     #
     # @param [String] command
     # @param [Hash<String, String>] headers
@@ -31,7 +31,7 @@ module StompParser
       @body = body || EMPTY
     end
 
-    # Content length of this message, according to headers.
+    # Content length of this frame, according to headers.
     #
     # @raise [ArgumentError] if content-length is not a valid integer
     # @return [Integer, nil]
@@ -69,14 +69,14 @@ module StompParser
       end
     end
 
-    # Change the command of this message.
+    # Change the command of this frame.
     #
     # @param [String] command
     def write_command(command)
       @command = command
     end
 
-    # Write a single header to this message.
+    # Write a single header to this frame.
     #
     # @param [String] key
     # @param [String] value
@@ -86,27 +86,27 @@ module StompParser
       @headers[key] = translate_header(value) unless @headers.has_key?(key)
     end
 
-    # Write the body to this message.
+    # Write the body to this frame.
     #
     # @param [String] body
     def write_body(body)
       @body = body.force_encoding(content_encoding)
     end
 
-    # @return [String] a string-representation of this message.
+    # @return [String] a string-representation of this frame.
     def to_str
-      message = "".force_encoding("UTF-8")
-      message << command << "\n"
+      frame = "".force_encoding("UTF-8")
+      frame << command << "\n"
 
       outgoing_headers = headers.dup
       outgoing_headers["content-length"] = body.bytesize
       outgoing_headers.each do |key, value|
-        message << serialize_header(key) << ":" << serialize_header(value) << "\n"
+        frame << serialize_header(key) << ":" << serialize_header(value) << "\n"
       end
-      message << "\n"
+      frame << "\n"
 
-      message << body << "\x00"
-      message
+      frame << body << "\x00"
+      frame
     end
 
     def [](key)

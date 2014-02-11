@@ -15,15 +15,15 @@
 
 typedef struct {
   VALUE error;
-  long max_message_size;
+  long max_frame_size;
 
   VALUE chunk;
   const char *p;
   int cs;
   const char *mark;
   VALUE mark_key;
-  VALUE mark_message;
-  long mark_message_size;
+  VALUE mark_frame;
+  long mark_frame_size;
   long mark_content_length;
 } parser_state_t;
 
@@ -36,22 +36,22 @@ ID g_write_header;
 ID g_write_body;
 ID g_content_length;
 ID g_build_parse_error;
-ID g_max_message_size;
+ID g_max_frame_size;
 
 %%{
-  machine message;
+  machine frame;
 
   action mark {
     mark = p;
   }
 
-  action mark_message {
-    mark_message = rb_funcall(cFrame, g_new, 2, Qnil, Qnil);
-    mark_message_size = 0;
+  action mark_frame {
+    mark_frame = rb_funcall(cFrame, g_new, 2, Qnil, Qnil);
+    mark_frame_size = 0;
   }
 
   action write_command {
-    rb_funcall(mark_message, g_write_command, 1, MARK_STR_NEW());
+    rb_funcall(mark_frame, g_write_command, 1, MARK_STR_NEW());
     mark = NULL;
   }
 
@@ -61,13 +61,13 @@ ID g_max_message_size;
   }
 
   action write_header {
-    rb_funcall(mark_message, g_write_header, 2, mark_key, MARK_STR_NEW());
+    rb_funcall(mark_frame, g_write_header, 2, mark_key, MARK_STR_NEW());
     mark_key = Qnil;
     mark = NULL;
   }
 
   action finish_headers {
-    VALUE length = rb_funcall(mark_message, g_content_length, 0);
+    VALUE length = rb_funcall(mark_frame, g_content_length, 0);
     if ( ! NIL_P(length)) {
       mark_content_length = NUM2LONG(length);
     } else {
@@ -76,7 +76,7 @@ ID g_max_message_size;
   }
 
   action write_body {
-    rb_funcall(mark_message, g_write_body, 1, MARK_STR_NEW());
+    rb_funcall(mark_frame, g_write_body, 1, MARK_STR_NEW());
     mark = NULL;
   }
 
@@ -88,19 +88,19 @@ ID g_max_message_size;
     ((mark_content_length == -1) || (MARK_LEN < mark_content_length))
   }
 
-  action check_message_size {
-    mark_message_size += 1;
-    if (mark_message_size > max_message_size) {
+  action check_frame_size {
+    mark_frame_size += 1;
+    if (mark_frame_size > max_frame_size) {
       rb_raise(eFrameSizeExceeded, "");
     }
   }
 
-  action finish_message {
-    rb_yield(mark_message);
-    mark_message = Qnil;
+  action finish_frame {
+    rb_yield(mark_frame);
+    mark_frame = Qnil;
   }
 
-  include message_common "parser_common.rl";
+  include frame_common "parser_common.rl";
 
   write data noprefix;
 }%%
@@ -113,7 +113,7 @@ static void parser_free(parser_state_t *state) {
 static void parser_mark(parser_state_t *state) {
   rb_gc_mark(state->error);
   rb_gc_mark(state->mark_key);
-  rb_gc_mark(state->mark_message);
+  rb_gc_mark(state->mark_frame);
   rb_gc_mark(state->chunk);
 }
 
@@ -126,21 +126,21 @@ static VALUE parser_initialize(int argc, VALUE *argv, VALUE self) {
   parser_state_t *state;
   Data_Get_Struct(self, parser_state_t, state);
 
-  VALUE max_message_size;
-  rb_scan_args(argc, argv, "01", &max_message_size);
+  VALUE max_frame_size;
+  rb_scan_args(argc, argv, "01", &max_frame_size);
 
-  if (max_message_size == Qnil) {
-    max_message_size = rb_funcall(mStompParser, g_max_message_size, 0);
+  if (max_frame_size == Qnil) {
+    max_frame_size = rb_funcall(mStompParser, g_max_frame_size, 0);
   }
 
   state->error = Qnil;
-  state->max_message_size = FIX2LONG(max_message_size);
+  state->max_frame_size = FIX2LONG(max_frame_size);
   state->chunk = Qnil;
   state->cs = start;
   state->mark = NULL;
   state->mark_key = Qnil;
-  state->mark_message = Qnil;
-  state->mark_message_size = 0;
+  state->mark_frame = Qnil;
+  state->mark_frame_size = 0;
   state->mark_content_length = 0;
 
   return self;
@@ -168,12 +168,12 @@ static VALUE parser_parse(VALUE self, VALUE new_chunk) {
     }
 
     const char *pe = RSTRING_END(chunk);
-    long max_message_size = state->max_message_size;
+    long max_frame_size = state->max_frame_size;
 
     int cs = state->cs;
     VALUE mark_key = state->mark_key;
-    VALUE mark_message = state->mark_message;
-    long mark_message_size = state->mark_message_size;
+    VALUE mark_frame = state->mark_frame;
+    long mark_frame_size = state->mark_frame_size;
     long mark_content_length = state->mark_content_length;
 
     %% write exec;
@@ -187,8 +187,8 @@ static VALUE parser_parse(VALUE self, VALUE new_chunk) {
     state->cs = cs;
     state->mark = mark;
     state->mark_key = mark_key;
-    state->mark_message = mark_message;
-    state->mark_message_size = mark_message_size;
+    state->mark_frame = mark_frame;
+    state->mark_frame_size = mark_frame_size;
     state->mark_content_length = mark_content_length;
 
     if (cs == error) {
@@ -215,7 +215,7 @@ void Init_c_parser(void) {
   g_write_body = rb_intern("write_body");
   g_content_length = rb_intern("content_length");
   g_build_parse_error = rb_intern("build_parse_error");
-  g_max_message_size = rb_intern("max_message_size");
+  g_max_frame_size = rb_intern("max_frame_size");
 
   VALUE cParser = rb_define_class_under(mStompParser, "CParser", rb_cObject);
   rb_define_alloc_func(cParser, parser_alloc);

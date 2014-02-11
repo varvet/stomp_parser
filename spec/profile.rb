@@ -17,7 +17,7 @@ profile_output = File.expand_path("./profile/parser.profile", File.dirname(__FIL
 PerfTools::CpuProfiler.start(profile_output) do
   i = 100
   loop do
-    parser.parse(data) do |message|
+    parser.parse(data) do |frame|
       # no op
     end
 

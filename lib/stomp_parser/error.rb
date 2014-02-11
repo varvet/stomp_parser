@@ -11,7 +11,7 @@ module StompParser
   #
   # Protects against malicious clients trying to
   # fill the available memory by sending very large
-  # messages, for example by sending an unlimited
+  # frames, for example by sending an unlimited
   # amount of headers.
   class FrameSizeExceeded < ParseError
   end

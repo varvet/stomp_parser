@@ -1,5 +1,5 @@
 %%{
-  machine message;
+  machine frame;
 
   getkey (chunk.getbyte(p) ^ 128) - 128;
 
@@ -10,32 +10,32 @@
     mark_key = chunk.byteslice(mark, p - mark)
     mark = nil
   }
-  action mark_message {
-    mark_message = Frame.new(nil, nil)
-    mark_message_size = 0
+  action mark_frame {
+    mark_frame = Frame.new(nil, nil)
+    mark_frame_size = 0
   }
-  action check_message_size {
-    mark_message_size += 1
-    raise FrameSizeExceeded if mark_message_size > max_message_size
+  action check_frame_size {
+    mark_frame_size += 1
+    raise FrameSizeExceeded if mark_frame_size > max_frame_size
   }
 
   action write_command {
-    mark_message.write_command(chunk.byteslice(mark, p - mark))
+    mark_frame.write_command(chunk.byteslice(mark, p - mark))
     mark = nil
   }
 
   action write_header {
-    mark_message.write_header(mark_key, chunk.byteslice(mark, p - mark))
+    mark_frame.write_header(mark_key, chunk.byteslice(mark, p - mark))
     mark_key = mark = nil
   }
 
   action write_body {
-    mark_message.write_body(chunk.byteslice(mark, p - mark))
+    mark_frame.write_body(chunk.byteslice(mark, p - mark))
     mark = nil
   }
 
   action finish_headers {
-    mark_content_length = mark_message.content_length
+    mark_content_length = mark_frame.content_length
   }
 
   action consume_null {
@@ -50,12 +50,12 @@
     end
   }
 
-  action finish_message {
-    yield mark_message
-    mark_message = nil
+  action finish_frame {
+    yield mark_frame
+    mark_frame = nil
   }
 
-  include message_common "parser_common.rl";
+  include frame_common "parser_common.rl";
 }%%
 
 module StompParser
@@ -66,8 +66,8 @@ module StompParser
         @chunk = nil
         @mark = nil
         @mark_key = nil
-        @mark_message = nil
-        @mark_message_size = nil
+        @mark_frame = nil
+        @mark_frame_size = nil
         @mark_content_length = nil
       end
 
@@ -76,8 +76,8 @@ module StompParser
       attr_accessor :cs
       attr_accessor :mark
       attr_accessor :mark_key
-      attr_accessor :mark_message
-      attr_accessor :mark_message_size
+      attr_accessor :mark_frame
+      attr_accessor :mark_frame_size
       attr_accessor :mark_content_length
     end
 
@@ -90,10 +90,10 @@ module StompParser
     #
     # @param [String] chunk
     # @param [State] state previous parser state, or nil for initial state
-    # @param [Integer] max_message_size
-    # @yield [message] yields each message as it is parsed
-    # @yieldparam message [Frame]
-    def self._parse(chunk, state, max_message_size)
+    # @param [Integer] max_frame_size
+    # @yield [frame] yields each frame as it is parsed
+    # @yieldparam frame [Frame]
+    def self._parse(chunk, state, max_frame_size)
       chunk.force_encoding(Encoding::BINARY)
 
       if state.chunk
@@ -108,8 +108,8 @@ module StompParser
       cs = state.cs
       mark = state.mark
       mark_key = state.mark_key
-      mark_message = state.mark_message
-      mark_message_size = state.mark_message_size
+      mark_frame = state.mark_frame
+      mark_frame_size = state.mark_frame_size
       mark_content_length = state.mark_content_length
 
       %% write exec;
@@ -123,8 +123,8 @@ module StompParser
       state.cs = cs
       state.mark = mark
       state.mark_key = mark_key
-      state.mark_message = mark_message
-      state.mark_message_size = mark_message_size
+      state.mark_frame = mark_frame
+      state.mark_frame_size = mark_frame_size
       state.mark_content_length = mark_content_length
 
       if cs == RubyParser.error
@@ -134,19 +134,19 @@ module StompParser
       end
     end
 
-    def initialize(max_message_size = StompParser.max_message_size)
+    def initialize(max_frame_size = StompParser.max_frame_size)
       @state = State.new
-      @max_message_size = Integer(max_message_size)
+      @max_frame_size = Integer(max_frame_size)
     end
 
     # Parse a chunk.
     #
     # @param [String] chunk
-    # @yield [message]
-    # @yieldparam [Frame] message
+    # @yield [frame]
+    # @yieldparam [Frame] frame
     def parse(chunk)
-      @error ||= self.class._parse(chunk, @state, @max_message_size) do |message|
-        yield message
+      @error ||= self.class._parse(chunk, @state, @max_frame_size) do |frame|
+        yield frame
       end
 
       raise @error if @error

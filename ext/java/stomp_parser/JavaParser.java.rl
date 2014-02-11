@@ -18,20 +18,20 @@ import org.jruby.anno.JRubyClass;
 import org.jruby.anno.JRubyMethod;
 
 %%{
-  machine message;
+  machine frame;
   alphtype byte;
 
   action mark {
     mark = p;
   }
 
-  action mark_message {
-    mark_message = context.runtime.getClassFromPath("StompParser::Frame").callMethod("new", context.nil, context.nil);
-    mark_message_size = 0;
+  action mark_frame {
+    mark_frame = context.runtime.getClassFromPath("StompParser::Frame").callMethod("new", context.nil, context.nil);
+    mark_frame_size = 0;
   }
 
   action write_command {
-    mark_message.callMethod(context, "write_command", RubyString.newString(context.runtime, data, mark, p - mark));
+    mark_frame.callMethod(context, "write_command", RubyString.newString(context.runtime, data, mark, p - mark));
     mark = -1;
   }
 
@@ -42,13 +42,13 @@ import org.jruby.anno.JRubyMethod;
 
   action write_header {
     IRubyObject args[] = { mark_key, RubyString.newString(context.runtime, data, mark, p - mark) };
-    mark_message.callMethod(context, "write_header", args);
+    mark_frame.callMethod(context, "write_header", args);
     mark_key = null;
     mark = -1;
   }
 
   action finish_headers {
-    IRubyObject content_length = mark_message.callMethod(context, "content_length");
+    IRubyObject content_length = mark_frame.callMethod(context, "content_length");
 
     if ( ! content_length.isNil()) {
       mark_content_length = RubyNumeric.num2int(content_length);
@@ -58,7 +58,7 @@ import org.jruby.anno.JRubyMethod;
   }
 
   action write_body {
-    mark_message.callMethod(context, "write_body", RubyString.newString(context.runtime, data, mark, p - mark));
+    mark_frame.callMethod(context, "write_body", RubyString.newString(context.runtime, data, mark, p - mark));
     mark = -1;
   }
 
@@ -70,21 +70,21 @@ import org.jruby.anno.JRubyMethod;
     ((mark_content_length == -1) || ((p - mark) < mark_content_length))
   }
 
-  action check_message_size {
-    mark_message_size += 1;
-    if (mark_message_size > maxFrameSize) {
-      RubyModule messageSizeExceeded = context.runtime.getClassFromPath("StompParser::FrameSizeExceeded");
-      RubyException error = (RubyException) messageSizeExceeded.callMethod("new");
+  action check_frame_size {
+    mark_frame_size += 1;
+    if (mark_frame_size > maxFrameSize) {
+      RubyModule frameSizeExceeded = context.runtime.getClassFromPath("StompParser::FrameSizeExceeded");
+      RubyException error = (RubyException) frameSizeExceeded.callMethod("new");
       throw new RaiseException(error);
     }
   }
 
-  action finish_message {
-    block.yield(context, mark_message);
-    mark_message = null;
+  action finish_frame {
+    block.yield(context, mark_frame);
+    mark_frame = null;
   }
 
-  include message_common "parser_common.rl";
+  include frame_common "parser_common.rl";
 }%%
 
 @JRubyClass(name="JavaParser", parent="Object")
@@ -96,8 +96,8 @@ public class JavaParser extends RubyObject {
     public byte[] chunk;
     public int mark = -1;
     public RubyString mark_key;
-    public IRubyObject mark_message;
-    public int mark_message_size = -1;
+    public IRubyObject mark_frame;
+    public int mark_frame_size = -1;
     public int mark_content_length = -1;
   }
 
@@ -114,7 +114,7 @@ public class JavaParser extends RubyObject {
   @JRubyMethod
   public IRubyObject initialize(ThreadContext context) {
     RubyModule mStompParser = context.runtime.getClassFromPath("StompParser");
-    return initialize(context, mStompParser.callMethod("max_message_size"));
+    return initialize(context, mStompParser.callMethod("max_frame_size"));
   }
 
   @JRubyMethod(argTypes = {RubyFixnum.class})
@@ -145,8 +145,8 @@ public class JavaParser extends RubyObject {
       int cs = state.cs;
       int mark = state.mark;
       RubyString mark_key = state.mark_key;
-      IRubyObject mark_message = state.mark_message;
-      int mark_message_size = state.mark_message_size;
+      IRubyObject mark_frame = state.mark_frame;
+      int mark_frame_size = state.mark_frame_size;
       int mark_content_length = state.mark_content_length;
 
       %% write exec;
@@ -160,8 +160,8 @@ public class JavaParser extends RubyObject {
       state.cs = cs;
       state.mark = mark;
       state.mark_key = mark_key;
-      state.mark_message = mark_message;
-      state.mark_message_size = mark_message_size;
+      state.mark_frame = mark_frame;
+      state.mark_frame_size = mark_frame_size;
       state.mark_content_length = mark_content_length;
 
       if (cs == error) {

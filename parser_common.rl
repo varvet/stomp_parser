@@ -1,5 +1,5 @@
 %%{
-  machine message_common;
+  machine frame_common;
 
   NULL = "\0";
   EOL = "\r"? . "\n";
@@ -19,7 +19,7 @@
   consume_body = (NULL when consume_null | ^NULL when consume_octet)*;
   body = consume_body >from(mark) % write_body <: NULL;
 
-  message = ((command > mark_message) :> headers :> (body @ finish_message)) $ check_message_size;
+  frame = ((command > mark_frame) :> headers :> (body @ finish_frame)) $ check_frame_size;
 
-  stream := (EOL | message)*;
+  stream := (EOL | frame)*;
 }%%

@@ -1,6 +1,6 @@
 require "stomp_parser/version"
 require "stomp_parser/error"
-require "stomp_parser/message"
+require "stomp_parser/frame"
 require "stomp_parser/ruby_parser"
 
 case RUBY_ENGINE
@@ -19,10 +19,10 @@ module StompParser
     RubyParser
   end
 
-  @max_message_size = 1024 * 10 # 10KB
+  @max_frame_size = 1024 * 10 # 10KB
 
   class << self
-    attr_accessor :max_message_size
+    attr_accessor :max_frame_size
 
     # Create a parse error from a string chunk and an index.
     #

@@ -1,9 +1,9 @@
 require_relative "../bench_helper"
 
 def parse_one(parser, data)
-  message = nil
-  parser.parse(data) { |m| message = m }
-  message
+  frame = nil
+  parser.parse(data) { |m| frame = m }
+  frame
 end
 
 %w[CParser JavaParser RubyParser].each do |parser|
@@ -16,28 +16,28 @@ end
   describe "#{parser}: minimal" do |bench|
     bench.setup do
       @parser = parser.new
-      @message = "CONNECT\n\n\x00"
+      @frame = "CONNECT\n\n\x00"
     end
 
-    bench.code { parse_one(@parser, @message) }
+    bench.code { parse_one(@parser, @frame) }
   end
 
   describe "#{parser}: headers and small body" do |bench|
     bench.setup do
       @parser = parser.new
-      @message = "CONNECT\ncontent-length:4\n\nbody\x00"
+      @frame = "CONNECT\ncontent-length:4\n\nbody\x00"
     end
 
-    bench.code { parse_one(@parser, @message) }
+    bench.code { parse_one(@parser, @frame) }
   end
 
   describe "#{parser}: headers and large body" do |bench|
     bench.setup do
       @parser = parser.new
-      large_body = ("b" * (StompParser.max_message_size - 50)) # make room for headers
-      @message = "CONNECT\ncontent-length:#{large_body.bytesize}\n\n#{large_body}\x00"
+      large_body = ("b" * (StompParser.max_frame_size - 50)) # make room for headers
+      @frame = "CONNECT\ncontent-length:#{large_body.bytesize}\n\n#{large_body}\x00"
     end
 
-    bench.code { parse_one(@parser, @message) }
+    bench.code { parse_one(@parser, @frame) }
   end
 end
