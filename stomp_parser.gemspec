@@ -8,12 +8,12 @@ Gem::Specification.new do |spec|
   spec.version       = StompParser::VERSION
   spec.authors       = ["Kim Burgestrand"]
   spec.email         = ["kim@burgestrand.se"]
-  spec.summary       = %q{STOMP over WebSockets for Ruby.}
+  spec.summary       = %q{STOMP frame parser.}
   spec.homepage      = "https://github.com/Burgestrand/stomp_parser"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
-  spec.files        += ["lib/stomp_parser/stomp/ruby_parser.rb"]
+  spec.files        += ["lib/stomp_parser/ruby_parser.rb"]
   spec.files        += ["ext/stomp_parser/c_parser.c"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})

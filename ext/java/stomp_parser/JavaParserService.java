@@ -1,4 +1,4 @@
-package stomp_parser.stomp;
+package stomp_parser;
 
 import org.jruby.Ruby;
 import org.jruby.RubyClass;
@@ -9,7 +9,7 @@ import org.jruby.runtime.ObjectAllocator;
 
 public class JavaParserService implements BasicLibraryService {
   public boolean basicLoad(Ruby ruby) {
-    RubyModule mStomp = ruby.getClassFromPath("StompParser::Stomp");
+    RubyModule mStomp = ruby.getClassFromPath("StompParser");
     RubyClass cJavaParser = ruby.defineClassUnder("JavaParser", ruby.getObject(), JAVA_PARSER_ALLOCATOR, mStomp);
     cJavaParser.defineAnnotatedMethods(JavaParser.class);
     return true;

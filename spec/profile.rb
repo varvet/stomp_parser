@@ -2,7 +2,7 @@ require "bundler/setup"
 require "stomp_parser"
 require "perftools"
 
-parser = StompParser::Stomp::Parser.new
+parser = StompParser::Parser.new
 body_size = (1024 * 99) / 2
 large_binary = "b\x00" * body_size # make room for headers
 data = <<-MESSAGE

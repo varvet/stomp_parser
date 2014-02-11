@@ -1,38 +1,37 @@
 
-# line 1 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 1 "lib/stomp_parser/ruby_parser.rb.rl"
 
-# line 59 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 59 "lib/stomp_parser/ruby_parser.rb.rl"
 
 
 module StompParser
-  module Stomp
-    class RubyParser
-      class State
-        def initialize
-          @cs = RubyParser.start
-          @chunk = nil
-          @mark = nil
-          @mark_key = nil
-          @mark_message = nil
-          @mark_message_size = nil
-          @mark_content_length = nil
-        end
-
-        # You want documentation? HAHA.
-        attr_accessor :chunk
-        attr_accessor :cs
-        attr_accessor :mark
-        attr_accessor :mark_key
-        attr_accessor :mark_message
-        attr_accessor :mark_message_size
-        attr_accessor :mark_content_length
+  class RubyParser
+    class State
+      def initialize
+        @cs = RubyParser.start
+        @chunk = nil
+        @mark = nil
+        @mark_key = nil
+        @mark_message = nil
+        @mark_message_size = nil
+        @mark_content_length = nil
       end
 
-      # this manipulates the singleton class of our context,
-      # so we do not want to run this code very often or we
-      # bust our ruby method caching
-      
-# line 36 "lib/stomp_parser/stomp/ruby_parser.rb"
+      # You want documentation? HAHA.
+      attr_accessor :chunk
+      attr_accessor :cs
+      attr_accessor :mark
+      attr_accessor :mark_key
+      attr_accessor :mark_message
+      attr_accessor :mark_message_size
+      attr_accessor :mark_content_length
+    end
+
+    # this manipulates the singleton class of our context,
+    # so we do not want to run this code very often or we
+    # bust our ruby method caching
+    
+# line 35 "lib/stomp_parser/ruby_parser.rb"
 class << self
 	attr_accessor :_cond_keys
 	private :_cond_keys, :_cond_keys=
@@ -617,36 +616,36 @@ end
 self.en_stream = 71;
 
 
-# line 89 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 88 "lib/stomp_parser/ruby_parser.rb.rl"
 
-      # Parse a chunk of Stomp-formatted data into a Message.
-      #
-      # @param [String] chunk
-      # @param [State] state previous parser state, or nil for initial state
-      # @param [Integer] max_message_size
-      # @yield [message] yields each message as it is parsed
-      # @yieldparam message [Stomp::Message]
-      def self._parse(chunk, state, max_message_size)
-        chunk.force_encoding(Encoding::BINARY)
+    # Parse a chunk of Stomp-formatted data into a Message.
+    #
+    # @param [String] chunk
+    # @param [State] state previous parser state, or nil for initial state
+    # @param [Integer] max_message_size
+    # @yield [message] yields each message as it is parsed
+    # @yieldparam message [Message]
+    def self._parse(chunk, state, max_message_size)
+      chunk.force_encoding(Encoding::BINARY)
 
-        if state.chunk
-          p = state.chunk.bytesize
-          chunk = state.chunk << chunk
-        else
-          p = 0
-        end
+      if state.chunk
+        p = state.chunk.bytesize
+        chunk = state.chunk << chunk
+      else
+        p = 0
+      end
 
-        pe = chunk.bytesize # special
+      pe = chunk.bytesize # special
 
-        cs = state.cs
-        mark = state.mark
-        mark_key = state.mark_key
-        mark_message = state.mark_message
-        mark_message_size = state.mark_message_size
-        mark_content_length = state.mark_content_length
+      cs = state.cs
+      mark = state.mark
+      mark_key = state.mark_key
+      mark_message = state.mark_message
+      mark_message_size = state.mark_message_size
+      mark_content_length = state.mark_content_length
 
-        
-# line 650 "lib/stomp_parser/stomp/ruby_parser.rb"
+      
+# line 649 "lib/stomp_parser/ruby_parser.rb"
 begin
 	testEof = false
 	_slen, _trans, _keys, _inds, _cond, _conds, _widec, _acts, _nacts = nil
@@ -670,12 +669,12 @@ begin
 	if _goto_level <= _resume
 	case _from_state_actions[cs] 
 	when 8 then
-# line 6 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 6 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark = p
   		end
-# line 679 "lib/stomp_parser/stomp/ruby_parser.rb"
+# line 678 "lib/stomp_parser/ruby_parser.rb"
 	end
 	_widec = ( (chunk.getbyte(p) ^ 128) - 128)
 	_keys = cs << 1
@@ -693,7 +692,7 @@ begin
 	when 1 then
 		_widec = (128 + (( (chunk.getbyte(p) ^ 128) - 128) - -128))
 		if ( 
-# line 41 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 41 "lib/stomp_parser/ruby_parser.rb.rl"
 
     (p - mark) < mark_content_length if mark_content_length
    ) then 
@@ -702,7 +701,7 @@ end
 	when 2 then
 		_widec = (640 + (( (chunk.getbyte(p) ^ 128) - 128) - -128))
 		if ( 
-# line 45 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 45 "lib/stomp_parser/ruby_parser.rb.rl"
 
     if mark_content_length
       (p - mark) < mark_content_length
@@ -728,131 +727,131 @@ end
 	if _trans_actions[_trans] != 0
 	case _trans_actions[_trans]
 	when 1 then
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 3 then
-# line 6 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 6 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark = p
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 5 then
-# line 9 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 9 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_key = chunk.byteslice(mark, p - mark)
     mark = nil
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 2 then
-# line 22 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 22 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message.write_command(chunk.byteslice(mark, p - mark))
     mark = nil
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 7 then
-# line 27 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 27 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message.write_header(mark_key, chunk.byteslice(mark, p - mark))
     mark_key = mark = nil
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 4 then
-# line 37 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 37 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_content_length = mark_message.content_length
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 6 then
-# line 6 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 6 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark = p
   		end
-# line 27 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 27 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message.write_header(mark_key, chunk.byteslice(mark, p - mark))
     mark_key = mark = nil
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 10 then
-# line 13 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 13 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
-    mark_message = Stomp::Message.new(nil, nil)
+    mark_message = Message.new(nil, nil)
     mark_message_size = 0
   		end
-# line 6 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 6 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark = p
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
 	when 9 then
-# line 32 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 32 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message.write_body(chunk.byteslice(mark, p - mark))
     mark = nil
   		end
-# line 53 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 53 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     yield mark_message
     mark_message = nil
   		end
-# line 17 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 17 "lib/stomp_parser/ruby_parser.rb.rl"
 		begin
 
     mark_message_size += 1
     raise MessageSizeExceeded if mark_message_size > max_message_size
   		end
-# line 856 "lib/stomp_parser/stomp/ruby_parser.rb"
+# line 855 "lib/stomp_parser/ruby_parser.rb"
 	end
 	end
 	end
@@ -875,45 +874,44 @@ end
 end
 	end
 
-# line 117 "lib/stomp_parser/stomp/ruby_parser.rb.rl"
+# line 116 "lib/stomp_parser/ruby_parser.rb.rl"
 
-        if mark
-          state.chunk = chunk
-        else
-          state.chunk = nil
-        end
-
-        state.cs = cs
-        state.mark = mark
-        state.mark_key = mark_key
-        state.mark_message = mark_message
-        state.mark_message_size = mark_message_size
-        state.mark_content_length = mark_content_length
-
-        if cs == RubyParser.error
-          Stomp.build_parse_error(chunk, p)
-        else
-          nil
-        end
+      if mark
+        state.chunk = chunk
+      else
+        state.chunk = nil
       end
 
-      def initialize(max_message_size = Stomp.max_message_size)
-        @state = State.new
-        @max_message_size = Integer(max_message_size)
+      state.cs = cs
+      state.mark = mark
+      state.mark_key = mark_key
+      state.mark_message = mark_message
+      state.mark_message_size = mark_message_size
+      state.mark_content_length = mark_content_length
+
+      if cs == RubyParser.error
+        StompParser.build_parse_error(chunk, p)
+      else
+        nil
+      end
+    end
+
+    def initialize(max_message_size = StompParser.max_message_size)
+      @state = State.new
+      @max_message_size = Integer(max_message_size)
+    end
+
+    # Parse a chunk.
+    #
+    # @param [String] chunk
+    # @yield [message]
+    # @yieldparam [Message] message
+    def parse(chunk)
+      @error ||= self.class._parse(chunk, @state, @max_message_size) do |message|
+        yield message
       end
 
-      # Parse a chunk.
-      #
-      # @param [String] chunk
-      # @yield [message]
-      # @yieldparam [Stomp::Message] message
-      def parse(chunk)
-        @error ||= self.class._parse(chunk, @state, @max_message_size) do |message|
-          yield message
-        end
-
-        raise @error if @error
-      end
+      raise @error if @error
     end
   end
 end

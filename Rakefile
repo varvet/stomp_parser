@@ -22,7 +22,7 @@ rule ".java" => %w[.java.rl parser_common.rl] do |t|
 end
 
 desc "ragel machines"
-task :compile => %w[lib/stomp_parser/stomp/ruby_parser.rb]
+task :compile => %w[lib/stomp_parser/ruby_parser.rb]
 
 case RUBY_ENGINE
 when "rbx", "ruby"
@@ -32,15 +32,15 @@ when "rbx", "ruby"
   Rake::ExtensionTask.new do |ext|
     ext.name = "c_parser"
     ext.ext_dir = "ext/stomp_parser"
-    ext.lib_dir = "lib/stomp_parser/stomp"
+    ext.lib_dir = "lib/stomp_parser"
   end
 when "jruby"
   require "rake/javaextensiontask"
-  task :compile => %w[ext/java/stomp_parser/stomp/JavaParser.java]
+  task :compile => %w[ext/java/stomp_parser/JavaParser.java]
 
   Rake::JavaExtensionTask.new do |ext|
     ext.name = "java_parser"
-    ext.lib_dir = "lib/stomp_parser/stomp"
+    ext.lib_dir = "lib/stomp_parser"
   end
 end
 
@@ -52,7 +52,7 @@ end
 
 namespace :ragel do
   desc "Show stomp parser state machine as an image"
-  task :show => "lib/stomp_parser/stomp/ruby_parser.rb" do |t|
+  task :show => "lib/stomp_parser/ruby_parser.rb" do |t|
     mkdir_p "tmp"
     ragel "-V", "-p", t.prerequisite_tasks[0].source, "-o", "tmp/parser.dot"
     sh "dot -Tpng -O tmp/parser.dot"

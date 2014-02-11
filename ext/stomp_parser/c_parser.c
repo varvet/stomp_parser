@@ -29,7 +29,7 @@ typedef struct {
   long mark_content_length;
 } parser_state_t;
 
-VALUE mStomp = Qnil;
+VALUE mStompParser = Qnil;
 VALUE cMessage = Qnil;
 VALUE eMessageSizeExceeded = Qnil;
 ID g_new;
@@ -77,7 +77,7 @@ static VALUE parser_initialize(int argc, VALUE *argv, VALUE self) {
   rb_scan_args(argc, argv, "01", &max_message_size);
 
   if (max_message_size == Qnil) {
-    max_message_size = rb_funcall(mStomp, g_max_message_size, 0);
+    max_message_size = rb_funcall(mStompParser, g_max_message_size, 0);
   }
 
   state->error = Qnil;
@@ -1816,7 +1816,7 @@ case 70:
 
     if (cs == error) {
       long index = p - RSTRING_PTR(chunk);
-      state->error = rb_funcall(mStomp, g_build_parse_error, 2, chunk, LONG2NUM(index));
+      state->error = rb_funcall(mStompParser, g_build_parse_error, 2, chunk, LONG2NUM(index));
     }
   }
 
@@ -1828,11 +1828,9 @@ case 70:
 }
 
 void Init_c_parser(void) {
-  VALUE mStompParser = rb_const_get(rb_cObject, rb_intern("StompParser"));
-
-  mStomp = rb_const_get(mStompParser, rb_intern("Stomp"));
-  cMessage = rb_const_get(mStomp, rb_intern("Message"));
-  eMessageSizeExceeded = rb_const_get(mStomp, rb_intern("MessageSizeExceeded"));
+  mStompParser = rb_const_get(rb_cObject, rb_intern("StompParser"));
+  cMessage = rb_const_get(mStompParser, rb_intern("Message"));
+  eMessageSizeExceeded = rb_const_get(mStompParser, rb_intern("MessageSizeExceeded"));
 
   g_new = rb_intern("new");
   g_write_command = rb_intern("write_command");
@@ -1842,7 +1840,7 @@ void Init_c_parser(void) {
   g_build_parse_error = rb_intern("build_parse_error");
   g_max_message_size = rb_intern("max_message_size");
 
-  VALUE cParser = rb_define_class_under(mStomp, "CParser", rb_cObject);
+  VALUE cParser = rb_define_class_under(mStompParser, "CParser", rb_cObject);
   rb_define_alloc_func(cParser, parser_alloc);
 
   rb_define_method(cParser, "initialize", parser_initialize, -1);

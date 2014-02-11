@@ -1,6 +1,6 @@
 
-// line 1 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
-package stomp_parser.stomp;
+// line 1 "ext/java/stomp_parser/JavaParser.java.rl"
+package stomp_parser;
 
 import org.jruby.Ruby;
 import org.jruby.RubyModule;
@@ -20,13 +20,13 @@ import org.jruby.anno.JRubyClass;
 import org.jruby.anno.JRubyMethod;
 
 
-// line 88 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 88 "ext/java/stomp_parser/JavaParser.java.rl"
 
 
 @JRubyClass(name="JavaParser", parent="Object")
 public class JavaParser extends RubyObject {
   
-// line 30 "ext/java/stomp_parser/stomp/JavaParser.java"
+// line 30 "ext/java/stomp_parser/JavaParser.java"
 private static byte[] init__actions_0()
 {
 	return new byte [] {
@@ -248,7 +248,7 @@ static final int error = 0;
 static final int en_stream = 71;
 
 
-// line 93 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 93 "ext/java/stomp_parser/JavaParser.java.rl"
 
   private class State {
     public int cs = JavaParser.start;
@@ -272,8 +272,8 @@ static final int en_stream = 71;
 
   @JRubyMethod
   public IRubyObject initialize(ThreadContext context) {
-    RubyModule mStomp = context.runtime.getClassFromPath("StompParser::Stomp");
-    return initialize(context, mStomp.callMethod("max_message_size"));
+    RubyModule mStompParser = context.runtime.getClassFromPath("StompParser");
+    return initialize(context, mStompParser.callMethod("max_message_size"));
   }
 
   @JRubyMethod(argTypes = {RubyFixnum.class})
@@ -309,7 +309,7 @@ static final int en_stream = 71;
       int mark_content_length = state.mark_content_length;
 
       
-// line 313 "ext/java/stomp_parser/stomp/JavaParser.java"
+// line 313 "ext/java/stomp_parser/JavaParser.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -336,12 +336,12 @@ case 1:
 	while ( _nacts-- > 0 ) {
 		switch ( _actions[_acts++] ) {
 	case 0:
-// line 24 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 24 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark = p;
   }
 	break;
-// line 345 "ext/java/stomp_parser/stomp/JavaParser.java"
+// line 345 "ext/java/stomp_parser/JavaParser.java"
 		}
 	}
 
@@ -366,7 +366,7 @@ case 1:
 	case 0: {
 		_widec = 128 + (data[p] - -128);
 		if ( 
-// line 65 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 65 "ext/java/stomp_parser/JavaParser.java.rl"
 
     ((mark_content_length != -1) && ((p - mark) < mark_content_length))
    ) _widec += 256;
@@ -375,7 +375,7 @@ case 1:
 	case 1: {
 		_widec = 640 + (data[p] - -128);
 		if ( 
-// line 69 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 69 "ext/java/stomp_parser/JavaParser.java.rl"
 
     ((mark_content_length == -1) || ((p - mark) < mark_content_length))
    ) _widec += 256;
@@ -447,34 +447,34 @@ case 1:
 			switch ( _actions[_acts++] )
 			{
 	case 0:
-// line 24 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 24 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark = p;
   }
 	break;
 	case 1:
-// line 28 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 28 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
-    mark_message = context.runtime.getClassFromPath("StompParser::Stomp::Message").callMethod("new", context.nil, context.nil);
+    mark_message = context.runtime.getClassFromPath("StompParser::Message").callMethod("new", context.nil, context.nil);
     mark_message_size = 0;
   }
 	break;
 	case 2:
-// line 33 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 33 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark_message.callMethod(context, "write_command", RubyString.newString(context.runtime, data, mark, p - mark));
     mark = -1;
   }
 	break;
 	case 3:
-// line 38 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 38 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark_key = RubyString.newString(context.runtime, data, mark, p - mark);
     mark = -1;
   }
 	break;
 	case 4:
-// line 43 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 43 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     IRubyObject args[] = { mark_key, RubyString.newString(context.runtime, data, mark, p - mark) };
     mark_message.callMethod(context, "write_header", args);
@@ -483,7 +483,7 @@ case 1:
   }
 	break;
 	case 5:
-// line 50 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 50 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     IRubyObject content_length = mark_message.callMethod(context, "content_length");
 
@@ -495,31 +495,31 @@ case 1:
   }
 	break;
 	case 6:
-// line 60 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 60 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark_message.callMethod(context, "write_body", RubyString.newString(context.runtime, data, mark, p - mark));
     mark = -1;
   }
 	break;
 	case 7:
-// line 73 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 73 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     mark_message_size += 1;
     if (mark_message_size > maxMessageSize) {
-      RubyModule messageSizeExceeded = context.runtime.getClassFromPath("StompParser::Stomp::MessageSizeExceeded");
+      RubyModule messageSizeExceeded = context.runtime.getClassFromPath("StompParser::MessageSizeExceeded");
       RubyException error = (RubyException) messageSizeExceeded.callMethod("new");
       throw new RaiseException(error);
     }
   }
 	break;
 	case 8:
-// line 82 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 82 "ext/java/stomp_parser/JavaParser.java.rl"
 	{
     block.yield(context, mark_message);
     mark_message = null;
   }
 	break;
-// line 523 "ext/java/stomp_parser/stomp/JavaParser.java"
+// line 523 "ext/java/stomp_parser/JavaParser.java"
 			}
 		}
 	}
@@ -539,7 +539,7 @@ case 5:
 	break; }
 	}
 
-// line 153 "ext/java/stomp_parser/stomp/JavaParser.java.rl"
+// line 153 "ext/java/stomp_parser/JavaParser.java.rl"
 
       if (mark != -1) {
         state.chunk = data;
@@ -556,7 +556,7 @@ case 5:
 
       if (cs == error) {
         IRubyObject args[] = { RubyString.newString(context.runtime, data), RubyFixnum.newFixnum(context.runtime, (long) p) };
-        parseError = (RubyException) context.runtime.getClassFromPath("StompParser::Stomp").callMethod(context, "build_parse_error", args);
+        parseError = (RubyException) context.runtime.getClassFromPath("StompParser").callMethod(context, "build_parse_error", args);
       }
     }
 
