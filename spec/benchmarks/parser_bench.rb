@@ -8,7 +8,7 @@ end
 
 %w[CParser JavaParser RubyParser].each do |parser|
   parser = begin
-    Stompede::Stomp.const_get(parser)
+    StompParser::Stomp.const_get(parser)
   rescue NameError
     next
   end
@@ -34,7 +34,7 @@ end
   describe "#{parser}: headers and large body" do |bench|
     bench.setup do
       @parser = parser.new
-      large_body = ("b" * (Stompede::Stomp.max_message_size - 50)) # make room for headers
+      large_body = ("b" * (StompParser::Stomp.max_message_size - 50)) # make room for headers
       @message = "CONNECT\ncontent-length:#{large_body.bytesize}\n\n#{large_body}\x00"
     end
 

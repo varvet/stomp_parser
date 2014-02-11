@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "stompede"
+require "stomp_parser"
 require "benchmark/ips"
 
 class Benchpress

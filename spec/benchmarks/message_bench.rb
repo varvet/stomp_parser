@@ -2,7 +2,7 @@ require_relative "../bench_helper"
 
 describe "Message#to_str minimal" do |bench|
   bench.setup do
-    @message = Stompede::Stomp::Message.new("CONNECT", nil)
+    @message = StompParser::Stomp::Message.new("CONNECT", nil)
   end
 
   bench.code { @message.to_str }
@@ -14,7 +14,7 @@ end
 
 describe "Message#to_str with header" do |bench|
   bench.setup do
-    @message = Stompede::Stomp::Message.new("CONNECT", { "heart-beat" => "0,0" }, nil)
+    @message = StompParser::Stomp::Message.new("CONNECT", { "heart-beat" => "0,0" }, nil)
   end
 
   bench.code { @message.to_str }
@@ -26,7 +26,7 @@ end
 
 describe "Message#to_str with headers and small body" do |bench|
   bench.setup do
-    @message = Stompede::Stomp::Message.new("CONNECT", { "some" => "header" }, "body")
+    @message = StompParser::Stomp::Message.new("CONNECT", { "some" => "header" }, "body")
   end
 
   bench.code { @message.to_str }
@@ -39,7 +39,7 @@ end
 describe "Message#to_str with headers and large body" do |bench|
   bench.setup do
     large_binary = "b\x00" * 2 # make room for headers
-    @message = Stompede::Stomp::Message.new("CONNECT", { "some" => "header" }, large_binary)
+    @message = StompParser::Stomp::Message.new("CONNECT", { "some" => "header" }, large_binary)
   end
 
   bench.code { @message.to_str }

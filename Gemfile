@@ -11,5 +11,3 @@ platforms :rbx do
   gem "rubysl-logger"
   gem "rubysl-fiber"
 end
-
-gem "celluloid", github: "celluloid/celluloid"

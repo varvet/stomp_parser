@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "stompede/stomp"
+require "stomp_parser"
 require "pry"
 require "timeout"
 

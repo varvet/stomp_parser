@@ -58,7 +58,7 @@
   include message_common "parser_common.rl";
 }%%
 
-module Stompede
+module StompParser
   module Stomp
     class RubyParser
       class State

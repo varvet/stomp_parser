@@ -1,5 +1,5 @@
 # encoding: UTF-8
-RSpec.shared_examples_for "a stompede parser" do
+RSpec.shared_examples_for "a stomp_parser parser" do
   let(:parser) { described_class.new }
 
   context "#parse" do
@@ -204,41 +204,41 @@ RSpec.shared_examples_for "a stompede parser" do
       end
 
       specify "invalid command" do
-        expect { parser.parse("CONNET\n\n\x00") }.to raise_error(Stompede::Stomp::ParseError)
+        expect { parser.parse("CONNET\n\n\x00") }.to raise_error(StompParser::Stomp::ParseError)
       end
 
       specify "unfinished command" do
-        expect { parser.parse("CONNECT\x00") }.to raise_error(Stompede::Stomp::ParseError)
+        expect { parser.parse("CONNECT\x00") }.to raise_error(StompParser::Stomp::ParseError)
       end
 
       specify "header with colon" do
-        expect { parser.parse("CONNECT\nfoo: :bar\n\n\x00") }.to raise_error(Stompede::Stomp::ParseError)
+        expect { parser.parse("CONNECT\nfoo: :bar\n\n\x00") }.to raise_error(StompParser::Stomp::ParseError)
       end
 
       specify "header with invalid escape" do
-        expect { parser.parse("CONNECT\nfoo:\\t\n\n\x00") }.to raise_error(Stompede::Stomp::ParseError)
+        expect { parser.parse("CONNECT\nfoo:\\t\n\n\x00") }.to raise_error(StompParser::Stomp::ParseError)
       end
 
       specify "body longer than content length" do
-        expect { parser.parse("CONNECT\ncontent-length:0\n\nx\x00") }.to raise_error(Stompede::Stomp::ParseError)
+        expect { parser.parse("CONNECT\ncontent-length:0\n\nx\x00") }.to raise_error(StompParser::Stomp::ParseError)
       end
 
       specify "invalid content length" do
-        expect { parser.parse("CONNECT\ncontent-length:LAWL\n\nx\x00") }.to raise_error(Stompede::Stomp::Error, /invalid content length "LAWL"/)
+        expect { parser.parse("CONNECT\ncontent-length:LAWL\n\nx\x00") }.to raise_error(StompParser::Stomp::Error, /invalid content length "LAWL"/)
       end
 
       specify "re-trying invocation after an error" do
         first_error = begin
           parser.parse("CONNET")
-        rescue Stompede::Stomp::ParseError => ex
+        rescue StompParser::Stomp::ParseError => ex
           ex
         end
 
-        first_error.should be_a(Stompede::Stomp::ParseError)
+        first_error.should be_a(StompParser::Stomp::ParseError)
 
         second_error = begin
           parser.parse("")
-        rescue Stompede::Stomp::ParseError => ex
+        rescue StompParser::Stomp::ParseError => ex
           ex
         end
 
@@ -246,13 +246,13 @@ RSpec.shared_examples_for "a stompede parser" do
       end
 
       specify "total size bigger than global max message size setting" do
-        Stompede::Stomp.stub(:max_message_size => 30)
+        StompParser::Stomp.stub(:max_message_size => 30)
         parser = described_class.new
         parser.parse("CONNECT\n") # 8
         parser.parse("header:value\n") # 21
         expect {
           parser.parse("other:val\n") # 31
-        }.to raise_error(Stompede::Stomp::MessageSizeExceeded)
+        }.to raise_error(StompParser::Stomp::MessageSizeExceeded)
       end
 
       specify "total size bigger than local max message size setting" do
@@ -261,7 +261,7 @@ RSpec.shared_examples_for "a stompede parser" do
         parser.parse("header:value\n") # 21
         expect {
           parser.parse("other:val\n") # 31
-        }.to raise_error(Stompede::Stomp::MessageSizeExceeded)
+        }.to raise_error(StompParser::Stomp::MessageSizeExceeded)
       end
     end
   end

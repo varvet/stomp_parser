@@ -1,4 +1,4 @@
-module Stompede
+module StompParser
   module Stomp
     class Message
       HEADER_TRANSLATIONS = {

@@ -1,15 +1,15 @@
-require "stompede/stomp/error"
-require "stompede/stomp/message"
-require "stompede/stomp/ruby_parser"
+require "stomp_parser/stomp/error"
+require "stomp_parser/stomp/message"
+require "stomp_parser/stomp/ruby_parser"
 
 case RUBY_ENGINE
 when "ruby", "rbx"
-  require "stompede/stomp/c_parser"
+  require "stomp_parser/stomp/c_parser"
 when "jruby"
-  require "stompede/stomp/java_parser"
+  require "stomp_parser/stomp/java_parser"
 end
 
-module Stompede
+module StompParser
   module Stomp
     Parser = if defined?(CParser)
       CParser

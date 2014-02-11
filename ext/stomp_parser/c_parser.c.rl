@@ -205,9 +205,9 @@ static VALUE parser_parse(VALUE self, VALUE new_chunk) {
 }
 
 void Init_c_parser(void) {
-  VALUE mStompede = rb_const_get(rb_cObject, rb_intern("Stompede"));
+  VALUE mStompParser = rb_const_get(rb_cObject, rb_intern("StompParser"));
 
-  mStomp = rb_const_get(mStompede, rb_intern("Stomp"));
+  mStomp = rb_const_get(mStompParser, rb_intern("Stomp"));
   cMessage = rb_const_get(mStomp, rb_intern("Message"));
   eMessageSizeExceeded = rb_const_get(mStomp, rb_intern("MessageSizeExceeded"));
 
