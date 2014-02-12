@@ -20,9 +20,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.extensions    = %w[ext/stomp_parser/extconf.rb]
 
-  spec.add_development_dependency "bundler", "~> 0"
-  spec.add_development_dependency "rake", "~> 0"
-  spec.add_development_dependency "rake-compiler", "~> 0"
-  spec.add_development_dependency "rspec", "~> 0"
-  spec.add_development_dependency "pry", "~> 0"
+  spec.add_development_dependency "bundler", ">= 0"
+  spec.add_development_dependency "rake", ">= 0"
+  spec.add_development_dependency "rake-compiler", ">= 0"
+  spec.add_development_dependency "rspec", ">= 0"
+  spec.add_development_dependency "pry", ">= 0"
 end
