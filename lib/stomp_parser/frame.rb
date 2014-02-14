@@ -9,6 +9,12 @@ module StompParser
     HEADER_TRANSLATIONS_KEYS = Regexp.union(HEADER_TRANSLATIONS.keys).freeze
     HEADER_REVERSE_TRANSLATIONS = HEADER_TRANSLATIONS.invert
     HEADER_REVERSE_TRANSLATIONS_KEYS = Regexp.union(HEADER_REVERSE_TRANSLATIONS.keys).freeze
+    SEMICOLON = ";".freeze
+    CHARSET_OFFSET = (8..-1).freeze
+    ENCODINGS = Encoding.list.each_with_object({}) do |encoding, map|
+      encoding.names.each { |name| map[name] = encoding }
+      map[encoding.name] = encoding
+    end
     EMPTY = "".force_encoding("UTF-8").freeze
 
     # @return [String]
@@ -61,25 +67,16 @@ module StompParser
     # @return [Encoding]
     def content_encoding
       if content_type
-        mime_type, charset = content_type.to_s.split(";")
-        mime_type = mime_type.to_s
-        charset = charset.to_s[/\Acharset=(.*)/, 1].to_s
+        mime_type, charset = content_type.split(SEMICOLON, 2)
+        charset = charset[CHARSET_OFFSET] if charset
+        charset ||= EMPTY
 
-        if charset.empty? and mime_type.to_s.start_with?("text/")
+        if charset.empty? and mime_type.start_with?("text/")
           Encoding::UTF_8
         elsif charset.empty?
           Encoding::BINARY
         else
-          encoding = begin
-            Encoding.find(charset)
-          rescue ArgumentError => ex
-          end
-
-          unless encoding
-            raise StompParser::InvalidEncodingError, "invalid encoding #{charset.inspect}"
-          end
-
-          encoding
+          ENCODINGS[charset] or raise StompParser::InvalidEncodingError, "invalid encoding #{charset.inspect}"
         end
       else
         Encoding::BINARY
