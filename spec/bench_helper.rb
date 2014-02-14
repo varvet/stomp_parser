@@ -58,7 +58,7 @@ end
 $__benchmarks__ = []
 
 at_exit do
-  reports = Benchmark.ips(time = 2) do |x|
+  reports = Benchmark.ips(time = 1) do |x|
     $__benchmarks__.each do |bench|
       5.times { bench.run_initial }
       x.report(bench.name, &bench)
