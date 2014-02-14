@@ -70,7 +70,7 @@ task :spec => :compile
 
 desc "Run all benchmarks."
 task :bench => :compile do
-  sh "ruby", "-I.", *FileList["spec/benchmarks/**/*.rb"].flat_map { |x| ["-r", x] }, "-e", "''"
+  sh "ruby", "-I.", *FileList["spec/benchmarks/**/*_bench.rb"].flat_map { |x| ["-r", x] }, "-e", "''"
 end
 
 desc "Run the profiler and show a gif, requires perftools.rb"
