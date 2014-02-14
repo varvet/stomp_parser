@@ -53,6 +53,10 @@ describe StompParser::Frame do
     end
   end
 
+  describe "#content_type" do
+    it "retrieves content type from headers, excluding charset specification"
+  end
+
   describe "#content_encoding" do
     it "assumes binary when no content type is available" do
       frame = StompParser::Frame.new
