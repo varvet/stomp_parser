@@ -22,12 +22,18 @@ module StompParser
 
     # Construct a frame from a command, optional headers, and a body.
     #
-    # @param [String] command
+    # @param [#to_str] command
     # @param [Hash<String, String>] headers
-    # @param [String] body
-    def initialize(command, headers = {}, body)
+    # @param [#to_str] body
+    def initialize(command = nil, headers_or_body = nil, body = nil)
+      if headers_or_body.is_a?(Hash)
+        headers = headers_or_body
+      else
+        body = headers_or_body
+      end
+
       @command = command || EMPTY
-      @headers = headers
+      @headers = headers || {}
       @body = body || EMPTY
     end
 
