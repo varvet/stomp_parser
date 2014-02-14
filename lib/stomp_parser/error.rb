@@ -2,6 +2,10 @@ module StompParser
   class Error < StandardError
   end
 
+  # Raised by Frame#content_encoding.
+  class InvalidEncodingError < Error
+  end
+
   # Errors raised by the Parser.
   class ParseError < Error
   end

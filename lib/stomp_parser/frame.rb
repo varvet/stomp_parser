@@ -55,8 +55,10 @@ module StompParser
       headers["content-type"]
     end
 
-    # @raise [ArgumentError] if encoding does not exist
-    # @return [Encoding] body encoding, according to headers.
+    # Determine content encoding by reviewing message headers.
+    #
+    # @raise [InvalidEncodingError] if encoding does not exist in Ruby
+    # @return [Encoding]
     def content_encoding
       if content_type
         mime_type, charset = content_type.to_s.split(";")
@@ -68,7 +70,16 @@ module StompParser
         elsif charset.empty?
           Encoding::BINARY
         else
-          Encoding.find(charset)
+          encoding = begin
+            Encoding.find(charset)
+          rescue ArgumentError => ex
+          end
+
+          unless encoding
+            raise StompParser::InvalidEncodingError, "invalid encoding #{charset.inspect}"
+          end
+
+          encoding
         end
       else
         Encoding::BINARY
