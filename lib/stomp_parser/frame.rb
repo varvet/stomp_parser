@@ -57,16 +57,12 @@ module StompParser
       end
     end
 
-    def content_type
-      headers["content-type"]
-    end
-
     # Determine content encoding by reviewing message headers.
     #
     # @raise [InvalidEncodingError] if encoding does not exist in Ruby
     # @return [Encoding]
     def content_encoding
-      if content_type
+      if content_type = headers["content-type"]
         mime_type, charset = content_type.split(SEMICOLON, 2)
         charset = charset[CHARSET_OFFSET] if charset
         charset ||= EMPTY
