@@ -36,6 +36,21 @@ describe StompParser::Frame do
     end
   end
 
+  describe "#[key]" do
+    it "retrieves raw headers" do
+      frame = StompParser::Frame.new("CONNECT", { "content-length" => "LAWL" })
+      frame["content-length"].should eq("LAWL")
+    end
+  end
+
+  describe "#[key] = value" do
+    it "sets raw headers without translation" do
+      frame = StompParser::Frame.new
+      frame["some-value"] = ":hello:"
+      frame.headers.should eq({ "some-value" => ":hello:" })
+    end
+  end
+
   describe "#content_length" do
     it "returns content length if available" do
       frame = StompParser::Frame.new("CONNECT", { "content-length" => "1337" })

@@ -43,6 +43,21 @@ module StompParser
       @body = body || EMPTY
     end
 
+    # Set a raw header.
+    #
+    # @param [String] key
+    # @param [String] value
+    def []=(key, value)
+      @headers[key] = value
+    end
+
+    # Retrieve a raw header.
+    #
+    # @param [String] key
+    def [](key)
+      @headers[key]
+    end
+
     # Content length of this frame, according to headers.
     #
     # @raise [ArgumentError] if content-length is not a valid integer
@@ -119,10 +134,6 @@ module StompParser
       frame
     end
     alias_method :to_s, :to_str
-
-    def [](key)
-      @headers[key]
-    end
 
     private
 
