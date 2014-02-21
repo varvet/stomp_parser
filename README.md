@@ -1,7 +1,7 @@
 # StompParser
 
-[![Build Status](https://travis-ci.org/stompede/stomp_parser.png?branch=master)](https://travis-ci.org/stompede/stomp_parser)
-[![Code Climate](https://codeclimate.com/github/stompede/stomp_parser.png)](https://codeclimate.com/github/stompede/stomp_parser)
+[![Build Status](https://travis-ci.org/elabs/stomp_parser.png?branch=master)](https://travis-ci.org/elabs/stomp_parser)
+[![Code Climate](https://codeclimate.com/github/elabs/stomp_parser.png)](https://codeclimate.com/github/elabs/stomp_parser)
 [![Gem Version](https://badge.fury.io/rb/stomp_parser.png)](http://badge.fury.io/rb/stomp_parser)
 
 Fast STOMP parser and serializer for Ruby with native extensions in C for MRI
@@ -31,7 +31,7 @@ StompParser::Frame.new("SEND", { some: "header" }, "Hello").to_str
 Development should be ez.
 
 ``` bash
-git clone git@github.com:stompede/stomp_parser.git # git, http://git-scm.com/
+git clone git@github.com:elabs/stomp_parser.git # git, http://git-scm.com/
 cd stomp_parser
 brew bundle # Homebrew, http://brew.sh/
 bundle install # Bundler, http://bundler.io/
@@ -47,7 +47,7 @@ A few notes:
 
 ## Contributing
 
-1. Fork it on GitHub (<http://github.com/stompede/stomp_parser/fork>).
+1. Fork it on GitHub (<http://github.com/elabs/stomp_parser/fork>).
 2. Create your feature branch (`git checkout -b my-new-feature`).
 3. Follow the [Development](#development) instructions in this README.
 4. Create your changes, please add tests.
