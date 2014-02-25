@@ -38,16 +38,16 @@ describe StompParser::Frame do
 
   describe "#[key]" do
     it "retrieves raw headers" do
-      frame = StompParser::Frame.new("CONNECT", { "content-length" => "LAWL" })
-      frame["content-length"].should eq("LAWL")
+      frame = StompParser::Frame.new("CONNECT", { "content-length" => "LA\x00WL" })
+      frame["content-length"].should eq("LA\x00WL")
     end
   end
 
   describe "#[key] = value" do
     it "sets raw headers without translation" do
       frame = StompParser::Frame.new
-      frame["some-value"] = ":hello:"
-      frame.headers.should eq({ "some-value" => ":hello:" })
+      frame["some-value"] = ":he\x00lo:"
+      frame.headers.should eq({ "some-value" => ":he\x00lo:" })
     end
   end
 
@@ -120,6 +120,11 @@ describe StompParser::Frame do
     specify "frame with with headers" do
       frame = StompParser::Frame.new("CONNECT", { "moo" => "cow", "boo" => "hoo" })
       frame.to_str.should eq "CONNECT\nmoo:cow\nboo:hoo\ncontent-length:0\n\n\x00"
+    end
+
+    specify "frame with with binary headers" do
+      frame = StompParser::Frame.new("CONNECT", { "m\x00o" => "c\x00w" })
+      frame.to_str.should eq "CONNECT\nm\x00o:c\x00w\ncontent-length:0\n\n\x00"
     end
 
     specify "frame with with body" do
