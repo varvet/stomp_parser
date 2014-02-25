@@ -46,12 +46,13 @@ ID g_max_frame_size;
   }
 
   action mark_frame {
-    mark_frame = rb_funcall(cFrame, g_new, 2, Qnil, Qnil);
+    mark_frame = rb_funcallv(cFrame, g_new, 0, NULL);
     mark_frame_size = 0;
   }
 
   action write_command {
-    rb_funcall(mark_frame, g_write_command, 1, MARK_STR_NEW());
+    VALUE command = MARK_STR_NEW();
+    rb_funcallv(mark_frame, g_write_command, 1, &command);
     mark = NULL;
   }
 
@@ -61,13 +62,14 @@ ID g_max_frame_size;
   }
 
   action write_header {
-    rb_funcall(mark_frame, g_write_header, 2, mark_key, MARK_STR_NEW());
+    VALUE args[2] = { mark_key, MARK_STR_NEW() };
+    rb_funcallv(mark_frame, g_write_header, 2, args);
     mark_key = Qnil;
     mark = NULL;
   }
 
   action finish_headers {
-    VALUE length = rb_funcall(mark_frame, g_content_length, 0);
+    VALUE length = rb_funcallv(mark_frame, g_content_length, 0, NULL);
     if ( ! NIL_P(length)) {
       mark_content_length = NUM2LONG(length);
     } else {
@@ -76,7 +78,8 @@ ID g_max_frame_size;
   }
 
   action write_body {
-    rb_funcall(mark_frame, g_write_body, 1, MARK_STR_NEW());
+    VALUE body = MARK_STR_NEW();
+    rb_funcallv(mark_frame, g_write_body, 1, &body);
     mark = NULL;
   }
 
