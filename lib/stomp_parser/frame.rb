@@ -94,6 +94,23 @@ module StompParser
       end
     end
 
+    # @return [String] a string-representation of this frame.
+    def to_str
+      frame = "".force_encoding("UTF-8")
+      frame << command << "\n"
+
+      outgoing_headers = headers.dup
+      outgoing_headers["content-length"] = body.bytesize
+      outgoing_headers.each do |key, value|
+        frame << serialize_header(key) << ":" << serialize_header(value) << "\n"
+      end
+      frame << "\n"
+
+      frame << body << "\x00"
+      frame
+    end
+    alias_method :to_s, :to_str
+
     # Change the command of this frame.
     #
     # @param [String] command
@@ -117,23 +134,6 @@ module StompParser
     def write_body(body)
       @body = body.force_encoding(content_encoding)
     end
-
-    # @return [String] a string-representation of this frame.
-    def to_str
-      frame = "".force_encoding("UTF-8")
-      frame << command << "\n"
-
-      outgoing_headers = headers.dup
-      outgoing_headers["content-length"] = body.bytesize
-      outgoing_headers.each do |key, value|
-        frame << serialize_header(key) << ":" << serialize_header(value) << "\n"
-      end
-      frame << "\n"
-
-      frame << body << "\x00"
-      frame
-    end
-    alias_method :to_s, :to_str
 
     private
 
