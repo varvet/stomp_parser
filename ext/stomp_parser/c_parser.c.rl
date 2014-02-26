@@ -30,7 +30,6 @@ typedef struct {
 VALUE mStompParser = Qnil;
 VALUE cFrame = Qnil;
 VALUE eFrameSizeExceeded = Qnil;
-ID g_new;
 ID g_write_command;
 ID g_write_header;
 ID g_write_body;
@@ -46,13 +45,13 @@ ID g_max_frame_size;
   }
 
   action mark_frame {
-    mark_frame = rb_funcallv(cFrame, g_new, 0, NULL);
+    mark_frame = rb_class_new_instance(0, NULL, cFrame);
     mark_frame_size = 0;
   }
 
   action write_command {
     VALUE command = MARK_STR_NEW();
-    rb_funcallv(mark_frame, g_write_command, 1, &command);
+    rb_funcall2(mark_frame, g_write_command, 1, &command);
     mark = NULL;
   }
 
@@ -63,13 +62,13 @@ ID g_max_frame_size;
 
   action write_header {
     VALUE args[2] = { mark_key, MARK_STR_NEW() };
-    rb_funcallv(mark_frame, g_write_header, 2, args);
+    rb_funcall2(mark_frame, g_write_header, 2, args);
     mark_key = Qnil;
     mark = NULL;
   }
 
   action finish_headers {
-    VALUE length = rb_funcallv(mark_frame, g_content_length, 0, NULL);
+    VALUE length = rb_funcall2(mark_frame, g_content_length, 0, NULL);
     if ( ! NIL_P(length)) {
       mark_content_length = NUM2LONG(length);
     } else {
@@ -79,7 +78,7 @@ ID g_max_frame_size;
 
   action write_body {
     VALUE body = MARK_STR_NEW();
-    rb_funcallv(mark_frame, g_write_body, 1, &body);
+    rb_funcall2(mark_frame, g_write_body, 1, &body);
     mark = NULL;
   }
 
@@ -211,7 +210,6 @@ void Init_c_parser(void) {
   cFrame = rb_const_get(mStompParser, rb_intern("Frame"));
   eFrameSizeExceeded = rb_const_get(mStompParser, rb_intern("FrameSizeExceeded"));
 
-  g_new = rb_intern("new");
   g_write_command = rb_intern("write_command");
   g_write_header = rb_intern("write_header");
   g_write_body = rb_intern("write_body");
