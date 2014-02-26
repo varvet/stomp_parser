@@ -48,7 +48,9 @@ static VALUE frame_unescape_header(VALUE self, VALUE value) {
     result[j] = chr;
   }
 
-  return rb_enc_str_new(result, j, rb_utf8_encoding());
+  VALUE final = rb_enc_str_new(result, j, rb_utf8_encoding());
+  xfree(result);
+  return final;
 }
 
 long frame_content_length(VALUE self) {
