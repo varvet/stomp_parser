@@ -1,17 +1,7 @@
-#include <ruby.h>
+#include "stomp_parser.h"
 
-#if DEBUG_H
-#  define DEBUG(fmt, ...) do { fprintf(stderr, fmt "\n", ##__VA_ARGS__); } while(0)
-#else
-#  define DEBUG(...)
-#endif
-
-#define UNUSED(x) (void)(x)
 #define MARK_LEN (p - mark)
 #define MARK_STR_NEW() rb_str_new(mark, MARK_LEN)
-
-#define true 1
-#define false 0
 
 typedef struct {
   VALUE error;
@@ -27,16 +17,13 @@ typedef struct {
   long mark_content_length;
 } parser_state_t;
 
-VALUE mStompParser = Qnil;
-VALUE cFrame = Qnil;
-VALUE eFrameSizeExceeded = Qnil;
-ID g_new;
-ID g_write_command;
-ID g_write_header;
-ID g_write_body;
-ID g_content_length;
 ID g_build_parse_error;
 ID g_max_frame_size;
+
+VALUE mStompParser;
+VALUE eError;
+VALUE eFrameSizeExceeded;
+VALUE cFrame;
 
 %%{
   machine frame;
@@ -46,13 +33,12 @@ ID g_max_frame_size;
   }
 
   action mark_frame {
-    mark_frame = rb_funcallv(cFrame, g_new, 0, NULL);
+    mark_frame = rb_class_new_instance(0, NULL, cFrame);
     mark_frame_size = 0;
   }
 
   action write_command {
-    VALUE command = MARK_STR_NEW();
-    rb_funcallv(mark_frame, g_write_command, 1, &command);
+    frame_write_command(mark_frame, MARK_STR_NEW());
     mark = NULL;
   }
 
@@ -62,24 +48,17 @@ ID g_max_frame_size;
   }
 
   action write_header {
-    VALUE args[2] = { mark_key, MARK_STR_NEW() };
-    rb_funcallv(mark_frame, g_write_header, 2, args);
+    frame_write_header(mark_frame, mark_key, MARK_STR_NEW());
     mark_key = Qnil;
     mark = NULL;
   }
 
   action finish_headers {
-    VALUE length = rb_funcallv(mark_frame, g_content_length, 0, NULL);
-    if ( ! NIL_P(length)) {
-      mark_content_length = NUM2LONG(length);
-    } else {
-      mark_content_length = -1;
-    }
+    mark_content_length = frame_content_length(mark_frame);
   }
 
   action write_body {
-    VALUE body = MARK_STR_NEW();
-    rb_funcallv(mark_frame, g_write_body, 1, &body);
+    frame_write_body(mark_frame, MARK_STR_NEW());
     mark = NULL;
   }
 
@@ -209,14 +188,10 @@ static VALUE parser_parse(VALUE self, VALUE new_chunk) {
 
 void Init_c_parser(void) {
   mStompParser = rb_const_get(rb_cObject, rb_intern("StompParser"));
-  cFrame = rb_const_get(mStompParser, rb_intern("Frame"));
+  eError = rb_const_get(mStompParser, rb_intern("Error"));
   eFrameSizeExceeded = rb_const_get(mStompParser, rb_intern("FrameSizeExceeded"));
+  cFrame = rb_const_get(mStompParser, rb_intern("CFrame"));
 
-  g_new = rb_intern("new");
-  g_write_command = rb_intern("write_command");
-  g_write_header = rb_intern("write_header");
-  g_write_body = rb_intern("write_body");
-  g_content_length = rb_intern("content_length");
   g_build_parse_error = rb_intern("build_parse_error");
   g_max_frame_size = rb_intern("max_frame_size");
 
@@ -225,4 +200,6 @@ void Init_c_parser(void) {
 
   rb_define_method(cParser, "initialize", parser_initialize, -1);
   rb_define_method(cParser, "parse", parser_parse, 1);
+
+  Init_c_frame();
 }
