@@ -109,7 +109,6 @@ ID g_max_frame_size;
 }%%
 
 static void parser_free(parser_state_t *state) {
-  // TODO: free memory inside struct!
   xfree(state);
 }
 
