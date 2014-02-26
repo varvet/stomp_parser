@@ -4,6 +4,7 @@ require "pry"
 require "timeout"
 
 require "support/shared_parser_examples"
+require "support/shared_frame_examples"
 
 module Helpers
   def with_internal_encoding(encoding)

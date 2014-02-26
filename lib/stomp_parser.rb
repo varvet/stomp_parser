@@ -1,24 +1,10 @@
 require "stomp_parser/version"
 require "stomp_parser/error"
-require "stomp_parser/frame"
-require "stomp_parser/ruby_parser"
 
-case RUBY_ENGINE
-when "ruby", "rbx"
-  require "stomp_parser/c_parser"
-when "jruby"
-  require "stomp_parser/java_parser"
-end
+require "stomp_parser/frame"
+require "stomp_parser/parser"
 
 module StompParser
-  Parser = if defined?(CParser)
-    CParser
-  elsif defined?(JavaParser)
-    JavaParser
-  else
-    RubyParser
-  end
-
   @max_frame_size = 1024 * 10 # 10KB
 
   class << self
