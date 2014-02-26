@@ -23,12 +23,12 @@ module StompParser
     end
 
     # All of these are for #to_str
-    EOL = "\n".force_encoding(Encoding::BINARY).freeze
-    EOL_H = "\n\n".force_encoding(Encoding::BINARY).freeze
-    NULL = "\x00".force_encoding(Encoding::BINARY).freeze
-    COLON = ":".force_encoding(Encoding::BINARY).freeze
-    CONTENT_LENGTH = "content-length".force_encoding(Encoding::UTF_8).freeze
-    CONTENT_LENGTH_H = "content-length:".force_encoding(Encoding::UTF_8).freeze
+    EOL = "\n".freeze
+    EOL_H = "\n\n".freeze
+    NULL = "\x00".freeze
+    COLON = ":".freeze
+    CONTENT_LENGTH = "content-length".freeze
+    CONTENT_LENGTH_H = "content-length:".freeze
 
     # @return [String]
     attr_reader :command
