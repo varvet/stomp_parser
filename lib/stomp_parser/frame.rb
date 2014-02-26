@@ -1,5 +1,6 @@
 module StompParser
   class Frame
+    # All of these are for #decode_header and #encode_header
     HEADER_TRANSLATIONS = {
       '\\r' => "\r",
       '\\n' => "\n",
@@ -9,13 +10,25 @@ module StompParser
     HEADER_TRANSLATIONS_KEYS = Regexp.union(HEADER_TRANSLATIONS.keys).freeze
     HEADER_REVERSE_TRANSLATIONS = HEADER_TRANSLATIONS.invert
     HEADER_REVERSE_TRANSLATIONS_KEYS = Regexp.union(HEADER_REVERSE_TRANSLATIONS.keys).freeze
+
+    # Used for initializer
+    EMPTY = "".force_encoding(Encoding::UTF_8).freeze
+
+    # All of these are for #content_encoding
     SEMICOLON = ";".freeze
     CHARSET_OFFSET = (8..-1).freeze
     ENCODINGS = Encoding.list.each_with_object({}) do |encoding, map|
       encoding.names.each { |name| map[name] = encoding }
       map[encoding.name] = encoding
     end
-    EMPTY = "".force_encoding("UTF-8").freeze
+
+    # All of these are for #to_str
+    EOL = "\n".force_encoding(Encoding::BINARY).freeze
+    EOL_H = "\n\n".force_encoding(Encoding::BINARY).freeze
+    NULL = "\x00".force_encoding(Encoding::BINARY).freeze
+    COLON = ":".force_encoding(Encoding::BINARY).freeze
+    CONTENT_LENGTH = "content-length".force_encoding(Encoding::UTF_8).freeze
+    CONTENT_LENGTH_H = "content-length:".force_encoding(Encoding::UTF_8).freeze
 
     # @return [String]
     attr_reader :command
@@ -54,9 +67,29 @@ module StompParser
     # Retrieve a raw header.
     #
     # @param [String] key
+    # @return [String, nil] value, or nil if value was empty
     def [](key)
       @headers[key]
     end
+
+    # @return [String] a string-representation of this frame.
+    def to_str
+      frame = "#{command}#{EOL}"
+      headers.each do |key, value|
+        next if key == CONTENT_LENGTH
+        frame << encode_header(key)
+        frame << COLON
+        frame << encode_header(value)
+        frame << EOL
+      end
+      frame << CONTENT_LENGTH_H
+      frame << body.bytesize.to_s
+      frame << EOL_H
+      frame << body unless body.empty?
+      frame << NULL
+      frame
+    end
+    alias_method :to_s, :to_str
 
     # Content length of this frame, according to headers.
     #
@@ -94,23 +127,6 @@ module StompParser
       end
     end
 
-    # @return [String] a string-representation of this frame.
-    def to_str
-      frame = "".force_encoding("UTF-8")
-      frame << command << "\n"
-
-      outgoing_headers = headers.dup
-      outgoing_headers["content-length"] = body.bytesize
-      outgoing_headers.each do |key, value|
-        frame << serialize_header(key) << ":" << serialize_header(value) << "\n"
-      end
-      frame << "\n"
-
-      frame << body << "\x00"
-      frame
-    end
-    alias_method :to_s, :to_str
-
     # Change the command of this frame.
     #
     # @param [String] command
@@ -124,8 +140,8 @@ module StompParser
     # @param [String] value
     def write_header(key, value)
       # @see http://stomp.github.io/stomp-specification-1.2.html#Repeated_Header_Entries
-      key = translate_header(key)
-      @headers[key] = translate_header(value) unless @headers.has_key?(key)
+      key = decode_header(key)
+      @headers[key] = decode_header(value) unless @headers.has_key?(key)
     end
 
     # Write the body to this frame.
@@ -138,12 +154,12 @@ module StompParser
     private
 
     # @see http://stomp.github.io/stomp-specification-1.2.html#Value_Encoding
-    def translate_header(value)
+    def decode_header(value)
       value.gsub(HEADER_TRANSLATIONS_KEYS, HEADER_TRANSLATIONS).force_encoding(Encoding::UTF_8) unless value.empty?
     end
 
-    # inverse of #translate_header
-    def serialize_header(value)
+    # inverse of #decode_header
+    def encode_header(value)
       value.to_s.gsub(HEADER_REVERSE_TRANSLATIONS_KEYS, HEADER_REVERSE_TRANSLATIONS)
     end
   end
